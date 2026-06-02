@@ -68,7 +68,7 @@ register_native_manifest() {
   "path": "'"${binary_path}"'",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://EXTENSION_ID_PLACEHOLDER/"
+    "chrome-extension://jcjdihdjhnaeabokpnpfepafhfefnbog/"
   ]
 }'
 
