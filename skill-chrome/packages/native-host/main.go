@@ -9,6 +9,7 @@ import (
 
 func init() {
 	expandPath()
+	tryBackgroundUpdate()
 }
 
 // expandPath ensures common tool directories are in PATH.
@@ -89,7 +90,7 @@ func main() {
 	var resp Response
 	switch req.Action {
 	case "ping":
-		resp = Response{OK: true, Data: map[string]string{"status": "ready"}}
+		resp = Response{OK: true, Data: map[string]string{"status": "ready", "version": currentVersion}}
 	case "detect_agents":
 		resp = handleDetect()
 	case "install_skills":
