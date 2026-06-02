@@ -185,7 +185,7 @@ export default function SidePanel() {
         </p>
         <div className="w-full bg-surface-strong rounded-md p-3 mb-4">
           <code className="text-caption text-body break-all select-all">
-            bash &lt;(curl -sL https://github.com/nicepkg/skill-chrome-host/releases/latest/download/install.sh)
+            bash &lt;(curl -sL https://github.com/adcreafy/skill-chrome/releases/latest/download/install.sh)
           </code>
         </div>
         <Button variant="secondary" size="sm" onClick={checkHost}>

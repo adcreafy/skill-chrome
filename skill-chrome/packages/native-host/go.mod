@@ -1,3 +1,3 @@
-module github.com/nicepkg/skill-chrome-host
+module github.com/adcreafy/skill-chrome
 
 go 1.25.0

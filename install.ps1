@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$REPO = "nicepkg/skill-chrome-host"
+$REPO = "adcreafy/skill-chrome"
 $BINARY_NAME = "skill-chrome-host"
 $HOST_NAME = "com.nicepkg.skill_chrome"
 $INSTALL_DIR = "$env:LOCALAPPDATA\skill-chrome"

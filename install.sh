@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="nicepkg/skill-chrome-host"
+REPO="adcreafy/skill-chrome"
 BINARY_NAME="skill-chrome-host"
 HOST_NAME="com.nicepkg.skill_chrome"
 INSTALL_DIR="${HOME}/.skill-chrome"
