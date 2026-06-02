@@ -29,11 +29,11 @@ detect_platform() {
 get_latest_version() {
   VERSION=""
   if command -v curl >/dev/null 2>&1; then
-    VERSION=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null \
-      | grep -o '"tag_name":\s*"[^"]*"' \
-      | head -1 \
-      | sed 's/.*"tag_name":\s*"//;s/"$//' \
-    ) || true
+    local json
+    json=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null) || true
+    if [ -n "$json" ]; then
+      VERSION=$(echo "$json" | grep '"tag_name"' | head -1 | cut -d'"' -f4) || true
+    fi
   fi
   if [ -z "$VERSION" ]; then
     VERSION="v0.1.0"
