@@ -1,10 +1,12 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useMemo } from "react"
 import "~styles/globals.css"
 import {
   Loader2,
   CheckCircle2,
   AlertCircle,
   Terminal,
+  Copy,
+  Check,
 } from "lucide-react"
 import { SkillCard } from "~components/skill-card"
 import { BottomBar } from "~components/bottom-bar"
@@ -172,27 +174,7 @@ export default function SidePanel() {
 
   // Host not installed — show setup guide
   if (!hostAvailable) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-canvas px-6 text-center">
-        <div className="w-12 h-12 rounded-xl bg-surface-strong flex items-center justify-center mb-4">
-          <Terminal className="w-6 h-6 text-muted" />
-        </div>
-        <p className="text-body-sm text-body-strong mb-2">
-          One-time setup required
-        </p>
-        <p className="text-caption text-muted mb-4 max-w-[260px]">
-          Run this command in Terminal to enable local skill installation:
-        </p>
-        <div className="w-full bg-surface-strong rounded-md p-3 mb-4">
-          <code className="text-caption text-body break-all select-all">
-            bash &lt;(curl -sL https://github.com/adcreafy/skill-chrome/releases/latest/download/install.sh)
-          </code>
-        </div>
-        <Button variant="secondary" size="sm" onClick={checkHost}>
-          I've completed setup — recheck
-        </Button>
-      </div>
-    )
+    return <SetupGuide onRecheck={checkHost} />
   }
 
   return (
@@ -264,6 +246,116 @@ export default function SidePanel() {
         onToggleEngine={toggleEngine}
         onInstall={handleInstall}
       />
+    </div>
+  )
+}
+
+const INSTALL_COMMANDS = {
+  mac: `bash <(curl -sL https://github.com/adcreafy/skill-chrome/releases/latest/download/install.sh)`,
+  windows: `irm https://github.com/adcreafy/skill-chrome/releases/latest/download/install.ps1 | iex`,
+  linux: `bash <(curl -sL https://github.com/adcreafy/skill-chrome/releases/latest/download/install.sh)`,
+} as const
+
+type Platform = keyof typeof INSTALL_COMMANDS
+
+const PLATFORM_LABELS: Record<Platform, string> = {
+  mac: "macOS",
+  windows: "Windows",
+  linux: "Linux",
+}
+
+const PLATFORM_HINTS: Record<Platform, string> = {
+  mac: "Open Terminal.app and paste:",
+  windows: "Open PowerShell and paste:",
+  linux: "Open a terminal and paste:",
+}
+
+function detectPlatform(): Platform {
+  const ua = navigator.userAgent.toLowerCase()
+  if (ua.includes("win")) return "windows"
+  if (ua.includes("linux")) return "linux"
+  return "mac"
+}
+
+function SetupGuide({ onRecheck }: { onRecheck: () => void }) {
+  const detectedPlatform = useMemo(detectPlatform, [])
+  const [platform, setPlatform] = useState<Platform>(detectedPlatform)
+  const [copied, setCopied] = useState(false)
+
+  const command = INSTALL_COMMANDS[platform]
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(command)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback: select text
+      const el = document.querySelector("[data-install-cmd]") as HTMLElement
+      if (el) {
+        const range = document.createRange()
+        range.selectNodeContents(el)
+        const sel = window.getSelection()
+        sel?.removeAllRanges()
+        sel?.addRange(range)
+      }
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-canvas px-5 text-center">
+      <div className="w-12 h-12 rounded-xl bg-surface-strong flex items-center justify-center mb-4">
+        <Terminal className="w-6 h-6 text-muted" />
+      </div>
+      <p className="text-body-sm text-body-strong mb-1">
+        One-time setup required
+      </p>
+      <p className="text-caption text-muted mb-4 max-w-[260px]">
+        Install the local helper to enable skill installation.
+      </p>
+
+      <div className="flex items-center gap-1 mb-3">
+        {(Object.keys(INSTALL_COMMANDS) as Platform[]).map((p) => (
+          <button
+            key={p}
+            type="button"
+            onClick={() => setPlatform(p)}
+            className={`px-2.5 py-1 rounded-md text-caption transition-colors ${
+              platform === p
+                ? "bg-primary text-on-primary"
+                : "bg-surface-strong text-muted hover:text-body"
+            }`}>
+            {PLATFORM_LABELS[p]}
+          </button>
+        ))}
+      </div>
+
+      <p className="text-caption text-muted mb-2">
+        {PLATFORM_HINTS[platform]}
+      </p>
+
+      <div className="w-full bg-surface-strong rounded-md p-3 mb-4 relative group">
+        <code
+          data-install-cmd
+          className="text-caption text-body break-all block pr-8 text-left">
+          {command}
+        </code>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="absolute top-2 right-2 p-1.5 rounded-md bg-canvas/80 hover:bg-canvas text-muted hover:text-body transition-colors"
+          title="Copy">
+          {copied ? (
+            <Check className="w-3.5 h-3.5 text-success" />
+          ) : (
+            <Copy className="w-3.5 h-3.5" />
+          )}
+        </button>
+      </div>
+
+      <Button variant="secondary" size="sm" onClick={onRecheck}>
+        I've completed setup — recheck
+      </Button>
     </div>
   )
 }
