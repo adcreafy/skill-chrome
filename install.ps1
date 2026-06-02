@@ -36,7 +36,7 @@ function Register-NativeManifest {
         description = "Skill Chrome Native Messaging Host"
         path = $BinaryPath
         type = "stdio"
-        allowed_origins = @("chrome-extension://jcjdihdjhnaeabokpnpfepafhfefnbog/")
+        allowed_origins = @("chrome-extension://lljmodipbnojpafcaegnlmfbanncbdpj/")
     } | ConvertTo-Json
 
     $regPath = "HKCU:\Software\Google\Chrome\NativeMessagingHosts\$HOST_NAME"

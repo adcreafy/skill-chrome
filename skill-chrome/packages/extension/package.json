@@ -30,6 +30,7 @@
     "vitest": "^4.1.8"
   },
   "manifest": {
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwQ2J14nWwM4uP3+546cIRE3lhGKlv6pvqOOSMwlembPY0JoJZnZNz9uOZtn0rKY1se8d5oXRAPDOa4Nm4WD0m750jouz8GR7wA4u9RdcMC1ZdDsTUG56DLinApVKah9vDnVYLCCM2wmgY6wrKhNmF7lqlFQZ6Y5sPlxA7ElKfKyPFfmC2ojT8WsSWqF5PdEnbAAuu5DdVCh3mmV/h2WDR1EiwysqmUh6xzukChstIY1DJiwWztY7B7khV2u3qXgWf3CnKdpOdtIEdrbL0YRaap6zGdEBu8xNf6wboRNbt6z/NEuK30fmVwNHvPGJLnvM0u0zgLAS3Cb+4VHOwoJJNwIDAQAB",
     "permissions": [
       "sidePanel",
       "activeTab",
