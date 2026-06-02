@@ -57,20 +57,75 @@ func resolveViaNpx(npxPath, source, tmpDir string) (*resolvedSkill, error) {
 	return pickSkillFromTmp(tmpDir, source)
 }
 
-func resolveViaGit(gitPath, source, tmpDir string) (*resolvedSkill, error) {
-	repoURL := source
-	if !strings.HasPrefix(source, "http") {
-		repoURL = "https://github.com/" + source + ".git"
-	}
-	cloneDir := filepath.Join(tmpDir, "repo")
-	cmd := exec.Command(gitPath, "clone", "--depth", "1", repoURL, cloneDir)
-	if err := cmd.Run(); err != nil {
-		return nil, err
+// githubTreeRe matches URLs like https://github.com/owner/repo/tree/branch/path/to/dir
+var githubTreeRe = regexp.MustCompile(`^https?://github\.com/([^/]+/[^/]+)/tree/([^/]+)(?:/(.+))?$`)
+
+// parseGitHubSource extracts repo URL, branch, and subpath from a GitHub URL.
+// Returns (repoURL, branch, subpath). For non-tree URLs, branch and subpath are empty.
+func parseGitHubSource(source string) (repoURL, branch, subpath string) {
+	m := githubTreeRe.FindStringSubmatch(source)
+	if m != nil {
+		return "https://github.com/" + m[1] + ".git", m[2], m[3]
 	}
 
-	// Find SKILL.md in cloned repo
+	// Plain GitHub URL like https://github.com/owner/repo
+	if strings.HasPrefix(source, "https://github.com/") || strings.HasPrefix(source, "http://github.com/") {
+		return source + ".git", "", ""
+	}
+
+	// Short form: owner/repo
+	if !strings.HasPrefix(source, "http") {
+		return "https://github.com/" + source + ".git", "", ""
+	}
+
+	return source, "", ""
+}
+
+func resolveViaGit(gitPath, source, tmpDir string) (*resolvedSkill, error) {
+	repoURL, branch, subpath := parseGitHubSource(source)
+
+	cloneDir := filepath.Join(tmpDir, "repo")
+
+	args := []string{"clone", "--depth", "1"}
+	if branch != "" {
+		args = append(args, "--branch", branch)
+	}
+	args = append(args, repoURL, cloneDir)
+
+	cmd := exec.Command(gitPath, args...)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("git clone failed: %s: %s", err, string(out))
+	}
+
+	// If subpath specified, look for SKILL.md starting from that subpath
+	searchRoot := cloneDir
+	if subpath != "" {
+		searchRoot = filepath.Join(cloneDir, subpath)
+		if _, err := os.Stat(searchRoot); err != nil {
+			return nil, fmt.Errorf("subpath %q not found in repo", subpath)
+		}
+	}
+
+	// Check if the search root itself contains SKILL.md
+	if _, err := os.Stat(filepath.Join(searchRoot, "SKILL.md")); err == nil {
+		files, err := scanDir(searchRoot)
+		if err != nil {
+			return nil, err
+		}
+		name := filepath.Base(searchRoot)
+		desc := parseFrontmatterDesc(files)
+		return &resolvedSkill{
+			Name:        name,
+			Description: desc,
+			Source:      source,
+			SourceType:  inferSourceType(source),
+			Files:       files,
+		}, nil
+	}
+
+	// Walk to find SKILL.md
 	var skillDir string
-	_ = filepath.Walk(cloneDir, func(path string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(searchRoot, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return nil
 		}

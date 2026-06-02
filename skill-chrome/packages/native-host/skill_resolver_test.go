@@ -90,6 +90,44 @@ func TestScanDir(t *testing.T) {
 	}
 }
 
+func TestParseGitHubSource(t *testing.T) {
+	cases := []struct {
+		input       string
+		wantRepo    string
+		wantBranch  string
+		wantSubpath string
+	}{
+		{
+			"https://github.com/NousResearch/hermes-agent/tree/main/skills/creative",
+			"https://github.com/NousResearch/hermes-agent.git", "main", "skills/creative",
+		},
+		{
+			"https://github.com/owner/repo/tree/develop/some/path",
+			"https://github.com/owner/repo.git", "develop", "some/path",
+		},
+		{
+			"https://github.com/owner/repo",
+			"https://github.com/owner/repo.git", "", "",
+		},
+		{
+			"owner/repo",
+			"https://github.com/owner/repo.git", "", "",
+		},
+	}
+	for _, c := range cases {
+		repo, branch, subpath := parseGitHubSource(c.input)
+		if repo != c.wantRepo {
+			t.Errorf("parseGitHubSource(%q).repo = %q, want %q", c.input, repo, c.wantRepo)
+		}
+		if branch != c.wantBranch {
+			t.Errorf("parseGitHubSource(%q).branch = %q, want %q", c.input, branch, c.wantBranch)
+		}
+		if subpath != c.wantSubpath {
+			t.Errorf("parseGitHubSource(%q).subpath = %q, want %q", c.input, subpath, c.wantSubpath)
+		}
+	}
+}
+
 func TestParseFrontmatterDesc(t *testing.T) {
 	files := []resolvedFile{
 		{
