@@ -1,0 +1,12 @@
+{
+  "name": "skill-chrome",
+  "private": true,
+  "packageManager": "pnpm@10.6.5",
+  "scripts": {
+    "dev:ext": "pnpm --filter @skill-chrome/extension dev",
+    "build:ext": "pnpm --filter @skill-chrome/extension build",
+    "build:host": "cd packages/native-host && make build-all",
+    "test:ext": "pnpm --filter @skill-chrome/extension test",
+    "test:host": "cd packages/native-host && go test ./..."
+  }
+}

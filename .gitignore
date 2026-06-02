@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+*.exe
+
+# Plasmo
+.plasmo/
+
+# Go
+skill-chrome/packages/native-host/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# vitest
+.vite/
+
+# Lock files (keep pnpm-lock)
+package-lock.json
+yarn.lock
+
+# Other projects in workspace root
+hermes-desktop/
+nano-skill-web/
+pseo-cms/

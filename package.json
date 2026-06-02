@@ -1,0 +1,30 @@
+{
+  "name": "@navos-mind/navos",
+  "version": "2.0.11",
+  "vipVersion": 188,
+  "productVersion": "v1.0",
+  "description": "Navos Tray",
+  "main": "dist/batch/global-1001_1_1001_1-arm64/main/index.js",
+  "author": "Navos Team",
+  "license": "MIT",
+  "dependencies": {
+    "7zip-min": "3.0.1",
+    "@mozilla/readability": "0.4.1",
+    "@types/qrcode": "1.5.6",
+    "axios": "1.13.6",
+    "bytenode": "1.5.7",
+    "electron-store": "8.2.0",
+    "electron-updater": "6.8.3",
+    "i18next": "23.16.8",
+    "jsdom": "23.0.0",
+    "jszip": "3.10.1",
+    "pinyin-pro": "^3.28.1",
+    "qrcode": "1.5.4",
+    "tar": "7.5.11",
+    "thinkingdata-node": "1.5.0",
+    "turndown": "7.2.2",
+    "winreg": "1.2.5",
+    "ws": "8.19.0"
+  },
+  "region": "${env.NAVOS_REGION}"
+}
